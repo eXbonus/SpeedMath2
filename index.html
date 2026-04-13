@@ -66,7 +66,7 @@
         .animate-in { animation: fadeSlideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards; }
 
         /* ==============================
-           TACTILE BUTTON BASE (The Secret Sauce)
+           TACTILE BUTTON BASE
            ============================== */
         .btn-tactile {
             background-color: var(--bg-app);
@@ -79,7 +79,13 @@
             color: var(--text-dark);
             font-weight: 700;
         }
+        /* Native CSS active state */
         .btn-tactile:active:not(:disabled) {
+            box-shadow: 0 0 0 var(--border-shadow);
+            transform: translateY(4px);
+        }
+        /* Custom JS pressed state for instant touch response */
+        .btn-tactile.pressed:not(:disabled) {
             box-shadow: 0 0 0 var(--border-shadow);
             transform: translateY(4px);
         }
@@ -121,8 +127,7 @@
         
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         .menu-card { 
-            padding: 1rem; display: flex; align-items: center; 
-            text-align: left;
+            padding: 1rem; display: flex; align-items: center; text-align: left;
         }
         .menu-icon { width: 42px; height: 42px; border-radius: 12px; background: var(--stat-blue-bg); color: var(--stat-blue-txt); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.3rem; margin-right: 0.75rem; flex-shrink: 0;}
         .menu-text { font-weight: 700; color: var(--text-dark); font-size: 0.9rem; line-height: 1.2; }
@@ -168,10 +173,7 @@
         .option-btn { padding: 1.5rem 0.5rem; font-size: 1.5rem;}
         .options .option-btn:last-child:nth-child(odd) { grid-column: 1 / -1; }
         
-        /* Dynamic Feedback Colors for Tactile Buttons */
         .btn-correct { background-color: var(--secondary) !important; color: white !important; border-color: var(--secondary-shadow) !important; box-shadow: 0 4px 0 var(--secondary-shadow) !important;}
-        .btn-correct:active:not(:disabled) { box-shadow: 0 0 0 var(--secondary-shadow) !important; }
-        
         .btn-incorrect { background-color: var(--danger) !important; color: white !important; border-color: var(--danger-shadow) !important; box-shadow: 0 4px 0 var(--danger-shadow) !important;}
 
         /* Numpad */
@@ -186,7 +188,15 @@
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         
         .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .num-key { height: 4rem; font-size: 1.5rem; }
+        
+        /* CRITICAL FIX FOR RAPID TYPING: touch-action none stops double-tap zoom & scroll interference */
+        .num-key { 
+            height: 4rem; font-size: 1.5rem; 
+            touch-action: none; 
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .num-key.pressed { background-color: var(--border-light); }
         .action-key { background-color: var(--bg-main); color: var(--primary); }
 
         .btn-quit { margin-top: 1.5rem; padding: 1rem;}
@@ -224,6 +234,11 @@
         .bar-fill { width: 100%; background: var(--border-light); border-radius: 8px; position: relative; overflow: hidden; }
         .bar-inner { position: absolute; bottom: 0; left: 0; right: 0; background: var(--primary); border-radius: 8px; transition: height 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .bar-label { font-size: 0.75rem; font-weight: 700; color: var(--text-gray); text-transform: uppercase; }
+      #performance-screen .stat-val { color: var(--text-dark); }
+#performance-screen .stat-label { color: var(--text-gray); }
+
+
+
     </style>
 </head>
 <body>
@@ -351,18 +366,18 @@
                 <div class="numpad-container hidden" id="numpad-container">
                     <div class="typed-display" id="typed-display"><span style="color:var(--text-gray); opacity:0.5;">?</span></div>
                     <div class="numpad">
-                        <button class="btn-tactile num-key" onclick="numpadPress('1')">1</button>
-                        <button class="btn-tactile num-key" onclick="numpadPress('2')">2</button>
-                        <button class="btn-tactile num-key" onclick="numpadPress('3')">3</button>
-                        <button class="btn-tactile num-key" onclick="numpadPress('4')">4</button>
-                        <button class="btn-tactile num-key" onclick="numpadPress('5')">5</button>
-                        <button class="btn-tactile num-key" onclick="numpadPress('6')">6</button>
-                        <button class="btn-tactile num-key" onclick="numpadPress('7')">7</button>
-                        <button class="btn-tactile num-key" onclick="numpadPress('8')">8</button>
-                        <button class="btn-tactile num-key" onclick="numpadPress('9')">9</button>
-                        <button class="btn-tactile num-key action-key" onclick="numpadPress('Del')">⌫</button>
-                        <button class="btn-tactile num-key" onclick="numpadPress('0')">0</button>
-                        <button class="btn-tactile num-key action-key" onclick="numpadPress('Enter')">↵</button>
+                        <button class="btn-tactile num-key" data-val="1">1</button>
+                        <button class="btn-tactile num-key" data-val="2">2</button>
+                        <button class="btn-tactile num-key" data-val="3">3</button>
+                        <button class="btn-tactile num-key" data-val="4">4</button>
+                        <button class="btn-tactile num-key" data-val="5">5</button>
+                        <button class="btn-tactile num-key" data-val="6">6</button>
+                        <button class="btn-tactile num-key" data-val="7">7</button>
+                        <button class="btn-tactile num-key" data-val="8">8</button>
+                        <button class="btn-tactile num-key" data-val="9">9</button>
+                        <button class="btn-tactile num-key action-key" data-val="Del">⌫</button>
+                        <button class="btn-tactile num-key" data-val="0">0</button>
+                        <button class="btn-tactile num-key action-key" data-val="Enter">↵</button>
                     </div>
                 </div>
 
@@ -411,6 +426,7 @@
         totalCorrect = parseInt(localStorage.getItem('sm_correct')) || 0;
         streakDays = parseInt(localStorage.getItem('sm_streak')) || 0;
         renderDashboardStats();
+        setupFastNumpad(); // Initialize instant-touch handlers
     }
 
     function saveStats() {
@@ -756,6 +772,20 @@
 
     function updateNumpadDisplay() {
         document.getElementById('typed-display').innerHTML = currentTypedAnswer ? currentTypedAnswer : '<span style="color:var(--text-gray); opacity:0.5;">?</span>';
+    }
+
+    // --- INSTANT TOUCH HANDLING FOR RAPID TYPING ---
+    function setupFastNumpad() {
+        document.querySelectorAll('.num-key').forEach(btn => {
+            btn.addEventListener('pointerdown', (e) => {
+                e.preventDefault(); // Kills browser click delay
+                btn.classList.add('pressed');
+                numpadPress(btn.getAttribute('data-val'));
+            });
+            ['pointerup', 'pointercancel', 'pointerleave'].forEach(evt => {
+                btn.addEventListener(evt, () => btn.classList.remove('pressed'));
+            });
+        });
     }
 
     function numpadPress(val) {
